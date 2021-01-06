@@ -1,3 +1,2 @@
-flask
-flask-sockets
-flask-cors
+quart
+quart-cors
