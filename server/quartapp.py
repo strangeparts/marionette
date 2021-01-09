@@ -1,7 +1,9 @@
 import asyncio
+import base64
 from functools import wraps
 import json
 
+import jwt
 from quart import websocket, Quart, request, Response
 from quart_cors import cors
 
@@ -9,6 +11,8 @@ app = Quart(__name__)
 app = cors(app)
 
 connected_websockets = set()
+
+secret = base64.b64decode(open('/Users/scotty/code/twitchrobot/secret.key').read().strip())
 
 def collect_websocket(func):
   @wraps(func)
@@ -30,7 +34,6 @@ async def sending(queue):
 async def receiving(queue):
   while True:
     data = await websocket.receive()
-    print("Received message %r" % data)
     await process_message(websocket, data)
 
 async def broadcast(message):
@@ -52,7 +55,11 @@ async def bcast():
 @app.route('/command')
 async def command():
   c = request.args.get('command')
-  print("Received command: " + c)
+
+  auth = request.headers.get('Authorization').replace('Bearer ', '')
+
+  r = jwt.decode(auth, secret, algorithms=['HS256'])
+
   j = json.dumps({
     'e': 'BUTTON_COMMAND',
     'd': {
