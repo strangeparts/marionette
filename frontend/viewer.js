@@ -2,20 +2,20 @@ let token = '';
 let tuid = '';
 
 const twitch = window.Twitch.ext;
+const buttons = ['l', 'r', 'f', 'b', 'tl', 'tr', 'CAMDOWN', 'CAMRESET', 'CAMUP'];
 
 twitch.onContext(function (context) {
   twitch.rig.log(context);
 });
 
 twitch.onAuthorized(function (auth) {
+  twitch.rig.log("onAuthorized");
+
   // save our credentials
   token = auth.token;
   tuid = auth.userId;
 
-  // enable the button
-  $('#cycle').removeAttr('disabled');
-
-  $.ajax(requests.get);
+  enable_buttons();
 });
 
 function logError(_, error, status) {
@@ -45,11 +45,17 @@ function attach_onclick(button_id) {
   });
 }
 
+function enable_buttons() {
+  $(function () {
+    $.each(buttons, function(i, val) {
+      twitch.rig.log("Enabling button #" + val);
+      $('#' + val).removeClass('disabled');
+    });
+  });
+}
+
 $(function () {
-  attach_onclick('l');
-  attach_onclick('r');
-  attach_onclick('f');
-  attach_onclick('b');
-  attach_onclick('tl');
-  attach_onclick('tr');
+  $.each(buttons, function(i, val) {
+    attach_onclick(val);
+  });
 });

@@ -1,8 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Viewer Page</title>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      .btn {
+          padding: 15% 0; 
+          font-size: 50px;
+      }
+
+      h1 {
+        font-size: 70px;
+      }
+    </style>
 </head>
 <body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
     <div id="app" class="full-height"></div>
@@ -12,24 +21,22 @@
     <div>
 
       <div class="container">
-        <div class="row">
-          <br>
-          <br>
-          <br>
+        <div class="row text-center">
+          <h1>Drive the robot!</h1>
         </div>
         <div class="row">
           <div class="d-grid col-4">
-            <button class="btn btn-primary" type="button" id="tl">
+            <button class="btn btn-primary btn-lg p-50 disabled" type="button" id="tl">
               Turn Left
             </button>
           </div>
           <div class="d-grid gap-2 col-4">
-            <button class="btn btn-primary" type="button" id="f">
+            <button class="btn btn-primary btn-lg disabled" type="button" id="f">
               Forward
             </button>
           </div>
           <div class="d-grid gap-2 col-4">
-            <button class="btn btn-primary" type="button" id="tr">
+            <button class="btn btn-primary btn-lg disabled" type="button" id="tr">
               Turn Right
             </button>
           </div>
@@ -39,18 +46,38 @@
         </div>
         <div class="row">
           <div class="d-grid col-4">
-            <button class="btn btn-primary" type="button" id="l">
+            <button class="btn btn-primary btn-lg disabled" type="button" id="l">
               Strafe Left
             </button>
           </div>
           <div class="d-grid gap-2 col-4">
-            <button class="btn btn-primary" type="button" id="b">
+            <button class="btn btn-primary btn-lg disabled" type="button" id="b">
               Backward
             </button>
           </div>
           <div class="d-grid gap-2 col-4">
-            <button class="btn btn-primary" type="button" id="r">
+            <button class="btn btn-primary btn-lg disabled" type="button" id="r">
               Strafe Right
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <br>
+        </div>
+        <div class="row">
+          <div class="d-grid col-4">
+            <button class="btn btn-primary btn-lg disabled" type="button" id="CAMDOWN">
+              Cam Down
+            </button>
+          </div>
+          <div class="d-grid gap-2 col-4">
+            <button class="btn btn-primary btn-lg disabled" type="button" id="CAMRESET">
+              Cam Reset
+            </button>
+          </div>
+          <div class="d-grid gap-2 col-4">
+            <button class="btn btn-primary btn-lg disabled" type="button" id="CAMUP">
+              Cam Up
             </button>
           </div>
         </div>
