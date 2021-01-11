@@ -2,6 +2,7 @@ import asyncio
 import base64
 from functools import wraps
 import json
+import os
 
 import jwt
 from quart import websocket, Quart, request, Response
@@ -12,7 +13,11 @@ app = cors(app)
 
 connected_websockets = set()
 
-secret = base64.b64decode(open('/Users/scotty/code/twitchrobot/secret.key').read().strip())
+secret = os.getenv("TWITCH_SECRET_KEY", None)
+if secret is None:
+  secret_file_path = os.path.join(os.getcwd(), "secret.key")
+  secret = base64.b64decode(open(secret_file_path).read().strip())
+
 
 def collect_websocket(func):
   @wraps(func)
