@@ -52,9 +52,8 @@ async def ws(queue):
   consumer = asyncio.create_task(receiving(queue))
   await asyncio.gather(producer, consumer)
 
-@app.route('/broadcast')
-async def bcast():
-  await broadcast(request.args.get('message'))
+@app.route('/')
+async def root():
   return 'OK'
 
 @app.route('/command')
