@@ -60,7 +60,7 @@ async def root():
 async def command():
   c = request.args.get('command')
 
-  auth = request.headers.get('Authorization').replace('Bearer ', '')
+  auth = request.headers.get('Authorization', '').replace('Bearer ', '')
 
   r = jwt.decode(auth, secret, algorithms=['HS256'])
 
