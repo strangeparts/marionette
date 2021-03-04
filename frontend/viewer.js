@@ -3,6 +3,8 @@ let tuid = '';
 
 const twitch = window.Twitch.ext;
 const buttons = ['l', 'r', 'f', 'b', 'tl', 'tr', 'CAMDOWN', 'CAMRESET', 'CAMUP'];
+// const server = 'localhost:8000'
+const server = 'marionette.strangeparts.com'
 
 twitch.onContext(function (context) {
   twitch.rig.log(context);
@@ -30,7 +32,7 @@ function createRequest (type, command) {
   twitch.rig.log('createRequest(' + type + ", " + command + ")");
   return {
     type: type,
-    url: location.protocol + '//localhost:8000/command?command=' + command,
+    url: 'https://' + server + '/command?command=' + command,
     headers: { 'Authorization': 'Bearer ' + token },
     success: logSuccess,
     error: logError
