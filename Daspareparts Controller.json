@@ -1,0 +1,118 @@
+{
+  "allowHttpBackend": false,
+  "backendCommand": "virtualenv/bin/gunicorn -k flask_sockets.worker app:app",
+  "backendFolderName": "server",
+  "certificateExceptions": [],
+  "extensionViews": [
+    {
+      "channelId": "229548216",
+      "configurationAnchor": "component",
+      "displayChannelName": "daspareparts",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
+        "width": 852,
+        "height": 480
+      },
+      "id": "1",
+      "isPopout": false,
+      "label": "Component",
+      "linked": false,
+      "linkedUserId": "",
+      "orientation": "Portrait",
+      "type": "component",
+      "viewerType": "Broadcaster"
+    },
+    {
+      "channelId": "229548216",
+      "configurationAnchor": "component",
+      "displayChannelName": "daspareparts",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      },
+      "id": "2",
+      "isPopout": false,
+      "label": "Bigger",
+      "linked": false,
+      "linkedUserId": "",
+      "orientation": "Portrait",
+      "type": "component",
+      "viewerType": "Broadcaster"
+    }
+  ],
+  "manifest": {
+    "anchor": "component",
+    "assetUrls": [],
+    "authorName": "daspareparts",
+    "bitsEnabled": false,
+    "canInstall": true,
+    "configUrl": "https://localhost:8080/config.html",
+    "configurationLocation": "none",
+    "description": "",
+    "eulaTosUrl": "",
+    "hasChatSupport": false,
+    "iconUrl": "",
+    "iconUrls": {},
+    "id": "e53g1fbe60bqodxtaccpuks71yuxzr",
+    "installationCount": -42,
+    "liveConfigUrl": "",
+    "name": "Daspareparts Controller",
+    "panelHeight": 0,
+    "privacyPolicyUrl": "",
+    "requestIdentityLink": false,
+    "requiredBroadcasterAbilities": [],
+    "screenshotUrls": [],
+    "sku": "",
+    "state": "Testing",
+    "subscriptionsSupportLevel": "none",
+    "summary": "",
+    "supportEmail": "daspareparts@strangeparts.com",
+    "vendorCode": "",
+    "version": "0.0.1",
+    "viewerSummary": "",
+    "viewerUrl": "",
+    "viewerUrls": {
+      "mobile": "https://localhost:8080/mobile.html",
+      "component": "https://localhost:8080/video_component.html"
+    },
+    "views": {
+      "mobile": {
+        "viewerUrl": "https://localhost:8080/mobile.html"
+      },
+      "component": {
+        "viewerUrl": "https://localhost:8080/video_component.html",
+        "aspectWidth": 0,
+        "aspectHeight": 0,
+        "aspectRatioX": 300,
+        "aspectRatioY": 200,
+        "scalePixels": 1024,
+        "targetHeight": 4000,
+        "size": 0,
+        "zoom": false,
+        "zoomPixels": 0,
+        "canLinkExternalContent": false,
+        "autoScale": true
+      },
+      "config": {
+        "viewerUrl": "https://localhost:8080/config.html",
+        "canLinkExternalContent": false
+      }
+    },
+    "whitelistedConfigUrls": [],
+    "whitelistedPanelUrls": []
+  },
+  "frontendCommand": "",
+  "frontendFolderName": "frontend",
+  "name": "Daspareparts Controller",
+  "usingRandomFrontendHostingPort": false,
+  "version": 3
+}
