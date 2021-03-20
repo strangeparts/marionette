@@ -4,10 +4,19 @@ Twitch extension for controlling robots remotely
 
 # Installation
 
-    cd server
-    virtualenv virtualenv
-    pip3 install -r requirements.txt
+```
+$ git clone https://github.com/strangeparts/marionette
+$ cd marionette/server
+$ virtualenv virtualenv
+```
+On linux do: `$ source virtualenv/bin/activate`
+```
+(virtualenv)$ pip3 install -r requirements.txt
+```
 
 # Run development server
 
-    gunicorn -k flask_sockets.worker --threads 5 --workers 5 -b '0.0.0.0:8000' app:app
+On linux do: `$ source virtualenv/bin/activate`
+```
+(virtualenv)$ QUART_DEBUG=1 QUART_APP=quartapp.py quart run --host 0.0.0.0 --port 8000
+```
