@@ -2,3 +2,5 @@ quart
 quart-cors
 pyjwt
 websocket_client
+configparser
+cryptography

@@ -8,16 +8,58 @@ import jwt
 from quart import websocket, Quart, request, Response
 from quart_cors import cors
 
+import sys
+from configparser import ConfigParser, NoSectionError, NoOptionError
+
+from cryptography.fernet import Fernet, InvalidToken
+
+
 app = Quart(__name__)
 app = cors(app)
 
 connected_websockets = set()
+# config start
+config = ConfigParser()
+try: 
+  with open('config.conf', 'r') as filepointer:
+    config.read_file(filepointer)
+except IOError:
+  print("Unable to read config.conf, check that it exists and that the program has permission to read it.")
+  sys.exit()
+except:
+  print("Error in config.conf:", sys.exc_info()[0])
+  sys.exit()
 
-secret = os.getenv("TWITCH_SECRET_KEY", None)
-if secret is None:
-  secret_file_path = os.path.join(os.getcwd(), "secret.key")
-  secret = base64.b64decode(open(secret_file_path).read().strip())
 
+try: 
+  # To read values from config:
+  # value = config.get('section', 'key')
+
+  encryption = config.get('crypto', 'encryption')
+  if encryption == 'force_both' or encryption == 'force_in' or encryption == 'force_out':
+    try:
+      secure = Fernet(config.get('crypto', 'token'))
+    except ValueError:
+      print("Error: Invalid token,", sys.exc_info()[1])
+      sys.exit()
+
+  server_address = config.get('server', 'address')
+
+  secret = os.getenv("TWITCH_SECRET_KEY", None)
+  if secret is None:
+    secret_code = config.get('twitch', 'ext_secret')
+#    secret_code = open(os.path.join(os.getcwd(), "secret.key")).read().strip()
+    secret = base64.b64decode(secret_code)
+  
+  if encryption == 'force_both' or encryption == 'force_out':
+    stream_key = config.get('twitch', 'stream_key')
+  else:
+    stream_key = "set encryption as force_out or force_both to get stream_key"
+
+except(NoSectionError, NoOptionError):
+  print("Error in config.conf:", sys.exc_info()[1])
+  sys.exit()
+# config end
 
 def collect_websocket(func):
   @wraps(func)
@@ -34,11 +76,31 @@ def collect_websocket(func):
 async def sending(queue):
   while True:
     data = await queue.get()
+    if encryption == 'force_both' or encryption == 'force_out':
+      data = str( secure.encrypt(bytes(data, 'utf-8')) )
     await websocket.send(data)
 
 async def receiving(queue):
   while True:
     data = await websocket.receive()
+    if encryption == 'force_both' or encryption == 'force_in':
+      if data.find("b'") == 0:
+        try:
+          data = secure.decrypt( bytes(data[2:(len(data)-1)], 'utf-8') )
+        except InvalidToken:
+          data = json.dumps({
+            'e': 'ERROR',
+            'd': {
+              'error_message': 'message encrypted with the wrong token',
+            },
+        })
+      else:
+        data = json.dumps({
+          'e': 'ERROR',
+          'd': {
+            'error_message': 'message not encrypted by robot',
+          },
+        })
     await process_message(websocket, data)
 
 async def broadcast(message):
@@ -86,10 +148,22 @@ async def process_message(websocket, message):
     j = json.dumps({
       'e': 'ROBOT_VALIDATED',
       'd': {
-        'host': '192.168.0.136:8000',
+        'host': server_address,
+        'stream_key': stream_key,
       },
     })
-    await websocket.send(j)
+
+    await broadcast(j)
+    return None
+
+  if m.get('e', '') == 'ERROR':
+    j = json.dumps({
+      'e': 'ERROR',
+      'd': m.get('d', '')
+    })
+
+    await broadcast(j)
+    return None
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0',port=8000)
