@@ -145,6 +145,7 @@ async def channels_list():
 
 @app.route('/command')
 async def command():
+  t_jwt = False
   c = request.args.get('command')
 
   auth = request.headers.get('Authorization', '').replace('Bearer ', '')
@@ -158,17 +159,31 @@ async def command():
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
-  j = json.dumps({
-    'e': 'BUTTON_COMMAND',
-    'd': {
-      'button': {
-        'command': c,
-      },
-      'user': {
-        'username': 'NONEUSER',
-      },
-    },
-  })
+  if t_jwt:
+    t_jwt = json.loads(t_jwt)
+    if t_jwt.get('opaque_user_id', '')[0] == 'U':
+      j = json.dumps({
+        'e': 'BUTTON_COMMAND',
+        'd': {
+          'button': {
+            'command': c,
+          },
+          'user': {
+            'username': 'NONEUSER',
+          },
+        },
+      })
+    else:
+      response = Response('')
+      response.status_code = 403
+      response.headers['Access-Control-Allow-Origin'] = '*'
+      return response
+  else:
+    response = Response('')
+    response.status_code = 403
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
   await websocket_send(j)
   response = Response('OK')
   response.headers['Access-Control-Allow-Origin'] = '*'
@@ -198,5 +213,11 @@ async def process_message(message):
     await websocket_send(j)
     return None
 
+
+@app.cli.command('run')
+def run():
+  app.run(host='0.0.0.0', debug=True, port=8000)  # , certfile='cert.pem', keyfile='key.pem'
+
+
 if __name__ == "__main__":
-  app.run(host='0.0.0.0', port=8000)
+  app.run(host='0.0.0.0', debug=True, port=8000)  # , certfile='cert.pem', keyfile='key.pem'
