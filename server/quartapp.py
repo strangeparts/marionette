@@ -5,6 +5,8 @@ import json
 import os
 
 import jwt
+from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError, InvalidTokenError, MissingRequiredClaimError
+
 from quart import websocket, Quart, request, Response
 from quart_cors import cors
 
@@ -124,7 +126,14 @@ async def command():
 
   auth = request.headers.get('Authorization', '').replace('Bearer ', '')
 
-  r = jwt.decode(auth, secret, algorithms=['HS256'])
+  try:
+    t_jwt = jwt.decode(auth, secret, algorithms=['HS256'],
+                       options={"require": ["channel_id", "opaque_user_id", "role"]})
+  except(InvalidSignatureError, ExpiredSignatureError, InvalidTokenError, MissingRequiredClaimError):
+    response = Response('')
+    response.status_code = 403
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
   j = json.dumps({
     'e': 'BUTTON_COMMAND',
