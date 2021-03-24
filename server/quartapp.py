@@ -80,7 +80,8 @@ async def sending(queue):
     data = await queue.get()
     await websocket_send(data)
 
-async def receiving(queue):
+
+async def receiving():
   while True:
     data = await websocket.receive()
     if encryption == 'force_both' or encryption == 'force_in':
@@ -118,7 +119,7 @@ async def broadcast(message):
 @collect_websocket
 async def ws(queue):
   producer = asyncio.create_task(sending(queue))
-  consumer = asyncio.create_task(receiving(queue))
+  consumer = asyncio.create_task(receiving())
   await asyncio.gather(producer, consumer)
 
 @app.route('/')
