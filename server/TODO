@@ -1,7 +1,7 @@
 X Make buttons bigger
 X Add client authentication
-X Add basic robot authentication
-  Emulate full remo.tv auth sequence
+  Add basic robot authentication
+X Emulate remo.tv auth sequence (make robot trust server)
   Add support for the TTS
   Add the capability to gate a command to only people with certain roles
 
