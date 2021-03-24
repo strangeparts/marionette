@@ -22,7 +22,7 @@ app = cors(app)
 connected_websockets = set()
 # config start
 config = ConfigParser()
-try: 
+try:
   with open('config.conf', 'r') as filepointer:
     config.read_file(filepointer)
 except IOError:
@@ -33,7 +33,7 @@ except:
   sys.exit()
 
 
-try: 
+try:
   # To read values from config:
   # value = config.get('section', 'key')
 
@@ -52,7 +52,7 @@ try:
     secret_code = config.get('twitch', 'ext_secret')
 #    secret_code = open(os.path.join(os.getcwd(), "secret.key")).read().strip()
     secret = base64.b64decode(secret_code)
-  
+
   if encryption == 'force_both' or encryption == 'force_out':
     stream_key = config.get('twitch', 'stream_key')
   else:
@@ -62,6 +62,7 @@ except(NoSectionError, NoOptionError):
   print("Error in config.conf:", sys.exc_info()[1])
   sys.exit()
 # config end
+
 
 def collect_websocket(func):
   @wraps(func)
@@ -75,6 +76,7 @@ def collect_websocket(func):
       connected_websockets.remove(queue)
   return wrapper
 
+
 async def sending(queue):
   while True:
     data = await queue.get()
@@ -87,14 +89,14 @@ async def receiving():
     if encryption == 'force_both' or encryption == 'force_in':
       if data.find("b'") == 0:
         try:
-          data = secure.decrypt( bytes(data[2:(len(data)-1)], 'utf-8') )
+          data = secure.decrypt(bytes(data[2:(len(data)-1)], 'utf-8'))
         except InvalidToken:
           data = json.dumps({
             'e': 'ERROR',
             'd': {
               'error_message': 'message encrypted with the wrong token',
             },
-        })
+          })
       else:
         data = json.dumps({
           'e': 'ERROR',
@@ -115,6 +117,7 @@ async def broadcast(message):
   for queue in connected_websockets:
     await queue.put(message)
 
+
 @app.websocket('/')
 @collect_websocket
 async def ws(queue):
@@ -122,9 +125,11 @@ async def ws(queue):
   consumer = asyncio.create_task(receiving())
   await asyncio.gather(producer, consumer)
 
+
 @app.route('/')
 async def root():
   return 'OK'
+
 
 @app.route('/command')
 async def command():
@@ -157,7 +162,8 @@ async def command():
   response.headers['Access-Control-Allow-Origin'] = '*'
   return response
 
-async def process_message(websocket, message):
+
+async def process_message(message):
   m = json.loads(message)
   if m.get('e', '') == 'AUTHENTICATE_ROBOT':
     j = json.dumps({
@@ -181,5 +187,4 @@ async def process_message(websocket, message):
     return None
 
 if __name__ == "__main__":
-  app.run(host='0.0.0.0',port=8000)
-  
+  app.run(host='0.0.0.0', port=8000)
