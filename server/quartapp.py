@@ -78,9 +78,7 @@ def collect_websocket(func):
 async def sending(queue):
   while True:
     data = await queue.get()
-    if encryption == 'force_both' or encryption == 'force_out':
-      data = str( secure.encrypt(bytes(data, 'utf-8')) )
-    await websocket.send(data)
+    await websocket_send(data)
 
 async def receiving(queue):
   while True:
@@ -103,7 +101,14 @@ async def receiving(queue):
             'error_message': 'message not encrypted by robot',
           },
         })
-    await process_message(websocket, data)
+    await process_message(data)
+
+
+async def websocket_send(message):
+  if encryption == 'force_both' or encryption == 'force_out':
+    message = str(secure.encrypt(bytes(message, 'utf-8')))
+  await websocket.send(message)
+
 
 async def broadcast(message):
   for queue in connected_websockets:
@@ -146,7 +151,7 @@ async def command():
       },
     },
   })
-  await broadcast(j)
+  await websocket_send(j)
   response = Response('OK')
   response.headers['Access-Control-Allow-Origin'] = '*'
   return response
@@ -162,7 +167,7 @@ async def process_message(websocket, message):
       },
     })
 
-    await broadcast(j)
+    await websocket_send(j)
     return None
 
   if m.get('e', '') == 'ERROR':
@@ -171,7 +176,7 @@ async def process_message(websocket, message):
       'd': m.get('d', '')
     })
 
-    await broadcast(j)
+    await websocket_send(j)
     return None
 
 if __name__ == "__main__":
