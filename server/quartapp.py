@@ -45,8 +45,6 @@ try:
       print("Error: Invalid token,", sys.exc_info()[1])
       sys.exit()
 
-  server_address = config.get('server', 'address')
-
   secret = os.getenv("TWITCH_SECRET_KEY", None)
   if secret is None:
     secret_code = config.get('twitch', 'ext_secret')
@@ -131,6 +129,20 @@ async def root():
   return 'OK'
 
 
+@app.route('/api/dev/channels/list/strangeparts')
+async def channels_list():
+  j = json.dumps({
+    "channels": [
+      {
+        "name": "SpareParts",
+        "id": "marionette-SpareParts",
+        "chat": "daspareparts"
+      }
+    ]
+  })
+  return j
+
+
 @app.route('/command')
 async def command():
   c = request.args.get('command')
@@ -169,7 +181,7 @@ async def process_message(message):
     j = json.dumps({
       'e': 'ROBOT_VALIDATED',
       'd': {
-        'host': server_address,
+        'host': 'strangeparts',
         'stream_key': stream_key,
       },
     })
