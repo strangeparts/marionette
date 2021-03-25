@@ -18,6 +18,7 @@ app = Quart(__name__)
 app = cors(app)
 
 connected_websockets = set()
+# robots = {}
 # config start
 config = ConfigParser()
 try:
@@ -98,7 +99,7 @@ async def channels_list():
     "channels": [
       {
         "name": "SpareParts",
-        "id": "marionette-SpareParts",
+        "id": "channel_SpareParts",
         "chat": "daspareparts"
       }
     ]
@@ -108,7 +109,6 @@ async def channels_list():
 
 @app.route('/command')
 async def command():
-  t_jwt = False
   c = request.args.get('command')
 
   auth = request.headers.get('Authorization', '').replace('Bearer ', '')
@@ -123,7 +123,6 @@ async def command():
     return response
 
   if t_jwt:
-    t_jwt = json.loads(t_jwt)
     if t_jwt.get('opaque_user_id', '')[0] == 'U':
       j = json.dumps({
         'e': 'BUTTON_COMMAND',
@@ -137,23 +136,26 @@ async def command():
         },
       })
     else:
+      app.logger.debug("JWT: " + str(t_jwt))
       response = Response('')
       response.status_code = 403
       response.headers['Access-Control-Allow-Origin'] = '*'
       return response
   else:
+    app.logger.debug("JWT: " + str(t_jwt))
     response = Response('')
     response.status_code = 403
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
-  await websocket.send(j)
+  await broadcast(j)  # after the websockets context issue is solved change this to send message only to target robot
   response = Response('OK')
   response.headers['Access-Control-Allow-Origin'] = '*'
   return response
 
 
 async def process_message(message):
+  app.logger.debug(message)
   m = json.loads(message)
   if m.get('e', '') == 'AUTHENTICATE_ROBOT':
     j = json.dumps({
@@ -166,6 +168,11 @@ async def process_message(message):
 
     await websocket.send(j)
     return None
+
+  # future code to copy websockets context for use to send websockets messages
+  # if m.get('e', '') == 'JOIN_CHANNEL':
+  #   robots[m.get('d', '')] = webaocket_context_copy
+  #   app.logger.debug(robots)
 
   if m.get('e', '') == 'ERROR':
     j = json.dumps({
