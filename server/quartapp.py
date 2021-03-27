@@ -39,7 +39,6 @@ except(IOError, FileNotFoundError):
   print("Unable to read robots.json, check that it exists and that the program has permission to read it.")
   sys.exit()
 
-
 try:
   # To read values from config:
   # value = config.get('section', 'key')
@@ -100,18 +99,22 @@ async def root():
   return 'OK'
 
 
-@app.route('/api/dev/channels/list/strangeparts')
-async def channels_list():
-  j = json.dumps({
-    "channels": [
-      {
-        "name": "SpareParts",
-        "id": "channel_SpareParts",
-        "chat": "daspareparts"
-      }
-    ]
-  })
-  return j
+@app.route('/api/dev/channels/list/<host>')
+async def channels_list(host):
+  chanlist = []
+  try:
+    for rid in robots_config[host]:
+      chanlist.append({
+        "name": robots_config[host][rid]["info"]["name"],
+        "id": rid,
+        "chat": robots_config[host][rid]['info']['chat']
+      })
+  except KeyError:
+    response = Response('')
+    response.status_code = 404
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+  return {"channels": chanlist}
 
 
 @app.route('/command')
