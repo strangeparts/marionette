@@ -168,11 +168,23 @@ async def process_message(message):
   app.logger.debug(message)
   m = json.loads(message)
   if m.get('e', '') == 'AUTHENTICATE_ROBOT':
+    try:
+      r_jwt = jwt.decode(m['d']['token'], secret_key, algorithms=['HS256'])
+    except(InvalidSignatureError, ExpiredSignatureError, InvalidTokenError):
+      e = json.dumps({
+        'e': 'INVALID_TOKEN',
+        'd': "token did not validate, check that it's correct",
+      })
+
+      await websocket.send(e)
+      # await websocket.close(1000)  not available on a quart release yet
+      return None
+
     j = json.dumps({
       'e': 'ROBOT_VALIDATED',
       'd': {
-        'host': 'strangeparts',
-        'stream_key': stream_key,
+        'host': r_jwt["host"],
+        'stream_key': robots_config[r_jwt["host"]][r_jwt["id"]]["info"]["stream_key"],
       },
     })
 
