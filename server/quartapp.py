@@ -207,10 +207,10 @@ async def process_message(message):
     return None
 
 
-@app.cli.command('run')
-def run():
-  app.run(host='0.0.0.0', debug=True, port=8000)  # , certfile='cert.pem', keyfile='key.pem'
+# @app.cli.command('run')
+# def run():
+#   app.run(host='0.0.0.0', port=8000)  # , certfile='cert.pem', keyfile='key.pem'
 
 
 if __name__ == "__main__":
-  app.run(host='0.0.0.0', debug=True, port=8000)  # , certfile='cert.pem', keyfile='key.pem'
+  app.run(host='0.0.0.0', port=8000)  # , certfile='cert.pem', keyfile='key.pem'
