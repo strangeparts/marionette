@@ -1,6 +1,9 @@
 X Make buttons bigger
 X Add client authentication
-Add basic robot authentication
+X Add basic robot authentication
+X Emulate remo.tv auth sequence (make robot trust server)
+  Add support for the TTS
+  Add the capability to gate a command to only people with certain roles
 
 Deploy server to cloud
 Get the extension running on Twitch
