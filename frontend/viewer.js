@@ -2,7 +2,7 @@ let token = '';
 let tuid = '';
 
 const twitch = window.Twitch.ext;
-const buttons = ['l', 'r', 'f', 'b', 'tl', 'tr', 'CAMDOWN', 'CAMRESET', 'CAMUP'];
+const buttons = ['f', 'b', 'tl', 'tr', 'CAMDOWN', 'CAMRESET', 'CAMUP'];
 const server = location.protocol + '//localhost:8000'
 
 twitch.onContext(function (context) {
