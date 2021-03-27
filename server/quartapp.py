@@ -18,17 +18,25 @@ app = Quart(__name__)
 app = cors(app)
 
 connected_websockets = set()
-# robots = {}
+# robots_con = {}
+robots_config = {}
+
 # config start
 config = ConfigParser()
 try:
   with open('config.conf', 'r') as filepointer:
     config.read_file(filepointer)
-except IOError:
+  filepointer.close()
+except(IOError, FileNotFoundError):
   print("Unable to read config.conf, check that it exists and that the program has permission to read it.")
   sys.exit()
-except:
-  print("Error in config.conf:", sys.exc_info()[0])
+
+try:
+  with open('robots.json', 'r') as filepointer:
+    robots_config = json.load(filepointer)
+  filepointer.close()
+except(IOError, FileNotFoundError):
+  print("Unable to read robots.json, check that it exists and that the program has permission to read it.")
   sys.exit()
 
 
@@ -36,13 +44,12 @@ try:
   # To read values from config:
   # value = config.get('section', 'key')
 
-  secret = os.getenv("TWITCH_SECRET_KEY", None)
-  if secret is None:
-    secret_code = config.get('twitch', 'ext_secret')
-#    secret_code = open(os.path.join(os.getcwd(), "secret.key")).read().strip()
-    secret = base64.b64decode(secret_code)
+  twitch_ext_secret = os.getenv("TWITCH_SECRET_KEY", None)
+  if twitch_ext_secret is None:
+    twitch_ext_secret = base64.b64decode(config.get('twitch', 'ext_secret'))
+    # twitch_ext_secret = base64.b64decode(open(os.path.join(os.getcwd(), "secret.key")).read().strip())
 
-    stream_key = config.get('twitch', 'stream_key')
+  secret_key = config.get('server', 'secret_key')
 
 except(NoSectionError, NoOptionError):
   print("Error in config.conf:", sys.exc_info()[1])
@@ -114,7 +121,7 @@ async def command():
   auth = request.headers.get('Authorization', '').replace('Bearer ', '')
 
   try:
-    t_jwt = jwt.decode(auth, secret, algorithms=['HS256'],
+    t_jwt = jwt.decode(auth, twitch_ext_secret, algorithms=['HS256'],
                        options={"require": ["channel_id", "opaque_user_id", "role"]})
   except(InvalidSignatureError, ExpiredSignatureError, InvalidTokenError, MissingRequiredClaimError):
     response = Response('')
@@ -171,7 +178,7 @@ async def process_message(message):
 
   # future code to copy websockets context for use to send websockets messages
   # if m.get('e', '') == 'JOIN_CHANNEL':
-  #   robots[m.get('d', '')] = webaocket_context_copy
+  #   robots_con[m.get('d', '')] = webaocket_context_copy
   #   app.logger.debug(robots)
 
   if m.get('e', '') == 'ERROR':
@@ -181,6 +188,7 @@ async def process_message(message):
     })
 
     await websocket.send(j)
+    # await websocket.close(1000)  not available on a quart release yet
     return None
 
 

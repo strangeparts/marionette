@@ -3,3 +3,4 @@ server/virtualenv
 *.pyc
 server/secret.key
 server/config.conf
+server/robots.json
