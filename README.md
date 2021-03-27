@@ -1,6 +1,7 @@
 # Marionette
 Twitch extension for controlling robots remotely
 
+### Warning: This code only supports one streamer with one robot per server
 
 # Installation
 
